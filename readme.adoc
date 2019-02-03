@@ -80,7 +80,7 @@ Should be same as Cassandra
 a|[.small]
 * Primary: eligible secondary calls for an election to nominate itself as the new primary. The replica set cannot process write operations until the election completes successfully.
 The replica set can continue to serve read queries if such queries are configured to run on secondaries while the primary is offline.
-* Secondary: first copy all data from one of the members, and then apply all changes by syncing oplog 
+* Secondary: first copy all data from one of the members, and then apply all changes by syncing oplog
 
 | Y
 | Y
@@ -157,7 +157,7 @@ Key range before 2.4, hash and range key both support later on
 
 | Secondary Indexes
 | NA
-| ?
+| No secondary index by default
 | Local
 | Global(term-partitioned)
 | Local
@@ -192,7 +192,8 @@ Fixed number of partitions per index, entire partitions moved between nodes
 | Request Routing
 | NA
 a|[.small]
-? Routing Tier(or partition aware client?)(ZK)
+Routing Tier(ZK), if no cache on client, meta table looking-up in zk first and then the region server is required
+meta table could be cached in client
 a|[.small]
 Client request to any node and then forward if miss
 | DynamoDB
@@ -202,9 +203,6 @@ a|[.small]
 ? Routing Tier(or partition aware client?)(ZK)
 | RabbitMQ
 |===
-
-
-
 
 
 
