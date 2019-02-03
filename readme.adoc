@@ -23,53 +23,76 @@
 
 
 | FailureOver
-a|
+a|[.small]
 
 * Follower: Follower copies latest snapshot from leader and then catch up with binlog
 * Leader: Followers will most recent binlog becomes leader, old leader's unreplicated writes are simply discarded
 
-| h | NO IMPACT as long as quorum ((w + r > n)) is satisfied |  should be same as Cassandra | Y | Y | Y | ?
+| h
+a|[.small]
+NO IMPACT as long as quorum ((w + r > n)) is satisfied
+a|[.small]
+Should be same as Cassandra | Y | Y | Y | ?
 
 
 | Replication Topology
-| Circular by default | Y | Y | Y |  ? | Y | Y | Y
+a|[.small]
+Circular by default | Y | Y | Y |  ? | Y | Y | Y
 
 
 | Replication Logs
-| originally STATEMENT-BASED, default to LOGICAL(row-based) if any nondeterminism in statement
+a|[.small]
+Originally STATEMENT-BASED, default to LOGICAL(row-based) if any nondeterminism in statement
 | WAL | Y | Y | Y | ? | Y | Y
 
 
 | Multi-Write Conflict Resolve
-| NA (as all writes are sent to leader)
-| NA (as writes are region-based, no conflict)
-| LWW (last write win)
+a|[.small]
+NA (as all writes are sent to leader)
+a|[.small]
+NA (as writes are region-based, no conflict)
+a|[.small]
+LWW (last write win)
 | Y | Y | ? | Y | Y
 
 .4+| Partition
 | Partitioning Strategy
-| NA | Key Range | First Key Hash, left key range | ? | key range before 2.4 | ? |  Y | ?
+| NA
+| Key Range
+a|[.small]
+First Key Hash, left key range
+| ?
+a|[.small]
+Key range before 2.4 | ? |  Y | ?
 
 | Secondary Indexes
-| NA | ? | Local | Global(term-partitioned) | Local | Local | ? | ?
+| NA
+| ?
+| Local
+| Global(term-partitioned) | Local | Local | ? | ?
 
 | Rebalancing Strategy
 | NA
 | Dynamic Partitioning
-| Partitioning proportionally to nodes, move split partitions between
+a|[.small]
+Partitioning proportionally to nodes, move split partitions between
 | ?
 | MongoDB
-| Fixed number of partitions, entire partitions moved between nodes
+a|[.small]
+Fixed number of partitions, entire partitions moved between nodes
 | Kafka
 | RabbitMQ
 
 | Request Routing
 | NA
-| ? Routing Tier(or partition aware client?)(ZK)
-| Client request to any node and then forward if miss
+a|[.small]
+? Routing Tier(or partition aware client?)(ZK)
+a|[.small]
+Client request to any node and then forward if miss
 | DynamoDB
 | Routing Tier (its own)
 | ES
-| ? Routing Tier(or partition aware client?)(ZK)
+a|[.small]
+? Routing Tier(or partition aware client?)(ZK)
 | RabbitMQ
 |===
