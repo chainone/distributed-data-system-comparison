@@ -5,13 +5,23 @@
 
 .7+| Replication
 | Write
-| single | multiple | multiple | ? | ? | ? |  Y | ?
+| Single write to leader
+a|[.small]
+Single write to the target region server
+First write needs lookup (location of meta table) in zk first and then the region server that holds meta table and then do the actual write
+meta table could be cached in client
+
+| Multi-write, select any node as coordinator node and forward request to the nodes hold the target data
+| ? | ? | ? |  Y | ?
 
 | Replication Type
-| single leader
-| ?
-| leaderless
-| leaderless
+a|[.small]
+Single leader, all data replication
+a|[.small]
+Partition based on key range, write to single region server, replica via HDFS
+
+| Leaderless, partition, multi-writes to selected nodes
+| Leaderless
 | leader-based
 | ?
 | leader-based
@@ -19,8 +29,12 @@
 
 
 | Sync/Async Replication
-| configurable, default semi-sync | Y | Y | Y | Y | ? | Y | Y
-
+a|[.small]
+Configurable, default semi-sync
+a|[.small]
+Kinda SYNC, Write to WAL(persistent in HDFS) and in member store and then return
+a|[.small]
+Configurable, the w in quorum ((w + r > n) | Y | Y | ? | Y | Y
 
 | FailureOver
 a|[.small]
@@ -28,9 +42,14 @@ a|[.small]
 * Follower: Follower copies latest snapshot from leader and then catch up with binlog
 * Leader: Followers will most recent binlog becomes leader, old leader's unreplicated writes are simply discarded
 
-| h
+a|[.small]
+* ZK: whole cluster is down
+* Master: need in-active master as hot backup, otherwise DDL operations will fail
+* Region Servers: node recover from WAL, while recovering, that part of data is not available
+
 a|[.small]
 NO IMPACT as long as quorum ((w + r > n)) is satisfied
+
 a|[.small]
 Should be same as Cassandra | Y | Y | Y | ?
 
@@ -43,7 +62,9 @@ Circular by default | Y | Y | Y |  ? | Y | Y | Y
 | Replication Logs
 a|[.small]
 Originally STATEMENT-BASED, default to LOGICAL(row-based) if any nondeterminism in statement
-| WAL | Y | Y | Y | ? | Y | Y
+| WAL
+a|[.small]
+??? | Y | Y | ? | Y | Y
 
 
 | Multi-Write Conflict Resolve
