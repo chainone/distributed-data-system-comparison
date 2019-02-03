@@ -3,12 +3,19 @@
 
 2+| Distributed Databases/message queues | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
 
-.5+| Replication
+.7+| Replication
 | Write
 | single | multiple | multiple | ? | ? | ? |  Y | ?
 
 | Replication Type
-| single leader | ? | leaderless | leader-based | Y | ? | leader-based | leader-based
+| single leader
+| ?
+| leaderless
+| leaderless
+| leader-based
+| ?
+| leader-based
+| leader-based
 
 
 | Sync/Async Replication
@@ -21,7 +28,7 @@ a|
 * Follower: Follower copies latest snapshot from leader and then catch up with binlog
 * Leader: Followers will most recent binlog becomes leader, old leader's unreplicated writes are simply discarded
 
-| ? | ?  | Y | Y | Y | Y | ? 
+| h | NO IMPACT as long as quorum ((w + r > n)) is satisfied |  should be same as Cassandra | Y | Y | Y | ?
 
 
 | Replication Topology
@@ -33,4 +40,36 @@ a|
 | WAL | Y | Y | Y | ? | Y | Y
 
 
+| Multi-Write Conflict Resolve
+| NA (as all writes are sent to leader)
+| NA (as writes are region-based, no conflict)
+| LWW (last write win)
+| Y | Y | ? | Y | Y
+
+.4+| Partition
+| Partitioning Strategy
+| NA | Key Range | First Key Hash, left key range | ? | key range before 2.4 | ? |  Y | ?
+
+| Secondary Indexes
+| NA | ? | Local | Global(term-partitioned) | Local | Local | ? | ?
+
+| Rebalancing Strategy
+| NA
+| Dynamic Partitioning
+| Partitioning proportionally to nodes, move split partitions between
+| ?
+| MongoDB
+| Fixed number of partitions, entire partitions moved between nodes
+| Kafka
+| RabbitMQ
+
+| Request Routing
+| NA
+| ? Routing Tier(or partition aware client?)(ZK)
+| Client request to any node and then forward if miss
+| DynamoDB
+| Routing Tier (its own)
+| ES
+| ? Routing Tier(or partition aware client?)(ZK)
+| RabbitMQ
 |===
