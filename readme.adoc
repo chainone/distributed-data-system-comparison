@@ -113,7 +113,7 @@ a|[.small]
 Originally STATEMENT-BASED, default to LOGICAL(row-based) if any nondeterminism in statement
 | WAL
 a|[.small]
-Commit Log????
+Commit Log, just like the WAL in HBase, however, the write doesn't wait for finishing writing to in-memory store
 | Y
 a|[.small]
 Op Log, should be STATEMENT-BASED with transforms
