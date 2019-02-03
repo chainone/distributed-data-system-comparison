@@ -1,0 +1,36 @@
+[cols="10*", options="header"]
+|===
+
+2+| Distributed Databases/message queues | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
+
+.5+| Replication
+| Write
+| single | multiple | multiple | ? | ? | ? |  Y | ?
+
+| Replication Type
+| single leader | ? | leaderless | leader-based | Y | ? | leader-based | leader-based
+
+
+| Sync/Async Replication
+| configurable, default semi-sync | Y | Y | Y | Y | ? | Y | Y
+
+
+| FailureOver
+a|
+
+* Follower: Follower copies latest snapshot from leader and then catch up with binlog
+* Leader: Followers will most recent binlog becomes leader, old leader's unreplicated writes are simply discarded
+
+| ? | ?  | Y | Y | Y | Y | ? 
+
+
+| Replication Topology
+| Circular by default | Y | Y | Y |  ? | Y | Y | Y
+
+
+| Replication Logs
+| originally STATEMENT-BASED, default to LOGICAL(row-based) if any nondeterminism in statement
+| WAL | Y | Y | Y | ? | Y | Y
+
+
+|===
