@@ -18,7 +18,9 @@ Multi-write, select any node as coordinator node and forward request to the node
 a|[.small]
 Single write to the primary node of the target Replica Set  and then async to secondaries,
 reads from secondaries may return data that does not reflect the state of the data on the primary
-| ?
+a|[.small]
+Write to one primary shard(partition) first and then sync changed documents to replica shards asynchronously (? some docs saying otherwise)
+
 | Y
 | ?
 
@@ -36,12 +38,10 @@ Leaderless, partition, multi-writes to selected nodes and with read repair if st
 | Leaderless
 a|[.small]
 leader-based in one replica set, all data on primary need to be synced to secondaries
-| ?
+a|[.small]
+leader-based (primary shard vs replica shards)
 | leader-based
 | leader-based
-
-
-
 
 
 
@@ -54,7 +54,7 @@ a|[.small]
 Configurable, the w in quorum ((w + r > n)
 | ?
 | Async
-| ?
+| Async(? some docs say otherwise)
 | Y
 | Y
 
@@ -82,7 +82,10 @@ a|[.small]
 The replica set can continue to serve read queries if such queries are configured to run on secondaries while the primary is offline.
 * Secondary: first copy all data from one of the members, and then apply all changes by syncing oplog
 
-| Y
+|
+* Master: HA masters, if no master, elect one other node as master.
+* Data nodes: if the failure node contains primary shards, one of the replica shards will be promoted (by master) to be primary, otherwise writing to that shard is not allowed
+
 | Y
 | ?
 
@@ -90,19 +93,18 @@ The replica set can continue to serve read queries if such queries are configure
 
 
 
-
-
-
-| Replication Topology
+| Multi-leader Replication Topology
 a|[.small]
-Circular by default
+Circular by default (Cluster version)
 | NA
 a|[.small]
 Circular
-| Y
+| ?
 a|[.small]
-No fixed topology, Secondary (Follower) chooses to sync oplog from Primary or Secondary based on ping time and the state of other secondary's replica status
-| Y
+NA, Secondary (Follower) chooses to sync oplog from Primary or Secondary based on ping time and the state of other secondary's replica status
+a|[.small]
+NA, Leader(node with that primary shard) forwards changed documents to nodes with replicas
+
 | Y
 | Y
 
@@ -117,7 +119,7 @@ Commit Log, just like the WAL in HBase, however, the write doesn't wait for fini
 | Y
 a|[.small]
 Op Log, should be STATEMENT-BASED with transforms
-| ?
+| No Log, copy shards initially, and then forward changed documents to sync between primary shard and replicas
 | Y
 | Y
 
@@ -133,7 +135,9 @@ LWW (last write win)
 | Y
 a|[.small]
 NA (as write are shard(partition) based, no conflict)
-| ?
+a|[.small]
+NA (as write are shard(partition) based, no conflict)
+
 | Y
 | Y
 
@@ -145,11 +149,11 @@ NA (as write are shard(partition) based, no conflict)
 | NA
 | Key Range
 a|[.small]
-First Key Hash, left key range
+First Key Hash, left Key Range
 | ?
 a|[.small]
 Key range before 2.4, hash and range key both support later on
-| ?
+| Key Hash
 | Y
 | ?
 
@@ -197,16 +201,36 @@ meta table could be cached in client
 a|[.small]
 Client request to any node and then forward if miss
 | DynamoDB
-| Routing Tier (multiple mongos to route and aggregate, and one config server to store data location information(on which partition))
-| ES
+a|[.small]
+Routing Tier (multiple mongos to route and aggregate, and one config server to store data location information(on which partition))
+a|[.small]
+Routing Tier (client node)
 a|[.small]
 ? Routing Tier(or partition aware client?)(ZK)
 | RabbitMQ
 |===
 
+## CAP
 
+[cols="8*", options="header"]
+|===
+| MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
+
+| AP, Eventually C
+| CP
+| AP, Eventually C
+| ?
+| P, Not A (during failure-over election), Not C (as async replica sync)
+| P, Not A (during the promotion of primary shards), Not C (as async replica sync)
+| Kafka
+| RabbitMQ
+
+|===
 
 ## Reference
-[1] ddia book
-[2] MongoDB: the definitive guide
-[3] MongoDB Manual
+
+. ddia book
+. MongoDB: the definitive guide
+. MongoDB Manual
+. ES Manual
+. ES definitive guide
