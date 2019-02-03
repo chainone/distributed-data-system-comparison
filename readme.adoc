@@ -4,6 +4,7 @@
 2+| Distributed Databases/message queues | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
 
 .7+| Replication
+
 | Write
 | Single write to leader
 a|[.small]
@@ -11,8 +12,17 @@ Single write to the target region server
 First write needs lookup (location of meta table) in zk first and then the region server that holds meta table and then do the actual write
 meta table could be cached in client
 
-| Multi-write, select any node as coordinator node and forward request to the nodes hold the target data
-| ? | ? | ? |  Y | ?
+a|[.small]
+Multi-write, select any node as coordinator node and forward request to the nodes hold the target data
+| ?
+a|[.small]
+Single write to the primary node of the target Replica Set  and then async to secondaries,
+reads from secondaries may return data that does not reflect the state of the data on the primary
+| ?
+| Y
+| ?
+
+
 
 | Replication Type
 a|[.small]
@@ -20,12 +30,19 @@ Single leader, all data replication
 a|[.small]
 Partition based on key range, write to single region server, replica via HDFS
 
-| Leaderless, partition, multi-writes to selected nodes
+a|[.small]
+Leaderless, partition, multi-writes to selected nodes and with read repair if stable value is obtained
+
 | Leaderless
-| leader-based
+a|[.small]
+leader-based in one replica set, all data on primary need to be synced to secondaries
 | ?
 | leader-based
 | leader-based
+
+
+
+
 
 
 | Sync/Async Replication
@@ -34,7 +51,15 @@ Configurable, default semi-sync
 a|[.small]
 Kinda SYNC, Write to WAL(persistent in HDFS) and in member store and then return
 a|[.small]
-Configurable, the w in quorum ((w + r > n) | Y | Y | ? | Y | Y
+Configurable, the w in quorum ((w + r > n)
+| ?
+| Async
+| ?
+| Y
+| Y
+
+
+
 
 | FailureOver
 a|[.small]
@@ -51,12 +76,36 @@ a|[.small]
 NO IMPACT as long as quorum ((w + r > n)) is satisfied
 
 a|[.small]
-Should be same as Cassandra | Y | Y | Y | ?
+Should be same as Cassandra
+a|[.small]
+* Primary: eligible secondary calls for an election to nominate itself as the new primary. The replica set cannot process write operations until the election completes successfully.
+The replica set can continue to serve read queries if such queries are configured to run on secondaries while the primary is offline.
+* Secondary: first copy all data from one of the members, and then apply all changes by syncing oplog 
+
+| Y
+| Y
+| ?
+
+
+
+
+
+
 
 
 | Replication Topology
 a|[.small]
-Circular by default | Y | Y | Y |  ? | Y | Y | Y
+Circular by default
+| NA
+a|[.small]
+Circular
+| Y
+a|[.small]
+No fixed topology, Secondary (Follower) chooses to sync oplog from Primary or Secondary based on ping time and the state of other secondary's replica status
+| Y
+| Y
+| Y
+
 
 
 | Replication Logs
@@ -64,7 +113,14 @@ a|[.small]
 Originally STATEMENT-BASED, default to LOGICAL(row-based) if any nondeterminism in statement
 | WAL
 a|[.small]
-??? | Y | Y | ? | Y | Y
+Commit Log????
+| Y
+a|[.small]
+Op Log, should be STATEMENT-BASED with transforms
+| ?
+| Y
+| Y
+
 
 
 | Multi-Write Conflict Resolve
@@ -74,7 +130,15 @@ a|[.small]
 NA (as writes are region-based, no conflict)
 a|[.small]
 LWW (last write win)
-| Y | Y | ? | Y | Y
+| Y
+a|[.small]
+NA (as write are shard(partition) based, no conflict)
+| ?
+| Y
+| Y
+
+
+
 
 .4+| Partition
 | Partitioning Strategy
@@ -84,13 +148,25 @@ a|[.small]
 First Key Hash, left key range
 | ?
 a|[.small]
-Key range before 2.4 | ? |  Y | ?
+Key range before 2.4, hash and range key both support later on
+| ?
+| Y
+| ?
+
+
 
 | Secondary Indexes
 | NA
 | ?
 | Local
-| Global(term-partitioned) | Local | Local | ? | ?
+| Global(term-partitioned)
+| Local
+| Local
+| ?
+| ?
+
+
+
 
 | Rebalancing Strategy
 | NA
@@ -98,11 +174,20 @@ Key range before 2.4 | ? |  Y | ?
 a|[.small]
 Partitioning proportionally to nodes, move split partitions between
 | ?
-| MongoDB
 a|[.small]
-Fixed number of partitions, entire partitions moved between nodes
+Number of partitions equals to that of replica sets, one partition has a lot of 64MB-size chunks,
+partitions could be added later one and the number of chunks will be re-balanced across partitions (shards)
+
+a|[.small]
+Fixed number of partitions per index, entire partitions moved between nodes
+
 | Kafka
 | RabbitMQ
+
+
+
+
+
 
 | Request Routing
 | NA
@@ -111,9 +196,19 @@ a|[.small]
 a|[.small]
 Client request to any node and then forward if miss
 | DynamoDB
-| Routing Tier (its own)
+| Routing Tier (multiple mongos to route and aggregate, and one config server to store data location information(on which partition))
 | ES
 a|[.small]
 ? Routing Tier(or partition aware client?)(ZK)
 | RabbitMQ
 |===
+
+
+
+
+
+
+## Reference
+[1] ddia book
+[2] MongoDB: the definitive guide
+[3] MongoDB Manual
