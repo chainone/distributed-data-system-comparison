@@ -11,7 +11,7 @@ CAUTION: The comparison table is not finished yet nor 100% correct, contribution
 [cols="10*", options="header"]
 |===
 
-2+| Data Systems | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
+2+| Data Systems | MySQL(Ma-Sl) | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
 
 .7+s| Replication
 
