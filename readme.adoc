@@ -4,7 +4,7 @@ While I was reading the book "Designing Data-Intensive Applications "", I was tr
 Though the book mentioned some of those data systems throughout the book, there is no central place to categorize all the popular existing distributed data systems by different characteristics.
 That's why I have the idea to make a such table so that it could help me to memorize and also it may be valuable to all the developers that are interested in this area.
 
-CAUTION: the table is not finished yet nor 100% correct, contributions are welcomed!
+CAUTION: The comparison table is not finished yet nor 100% correct, contributions are welcomed!
 
 ## Detailed comparison table
 
