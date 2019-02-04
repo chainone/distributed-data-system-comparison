@@ -1,11 +1,21 @@
+## Preface
+While I was reading the book "Designing Data-Intensive Applications "", I was trying to understand the essence of distributed data systems and what are the techniques commonly applied in those data systems that we (as developers) interact with everyday and what are the pros and cons.
+
+Though the book mentioned some of those data systems throughout the book, there is no central place to categorize all the popular existing distributed data systems by different characteristics.
+That's why I have the idea to make a such table so that it could help me to memorize and also it may be valuable to all the developers that are interested in this area.
+
+CAUTION: the table is not finished yet nor 100% correct, contributions are welcomed!
+
+## Detailed comparison table
+
 [cols="10*", options="header"]
 |===
 
-2+| Distributed Databases/message queues | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
+2+| Data Systems | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
 
-.7+| Replication
+.7+s| Replication
 
-| Write
+s| Write
 | Single write to leader
 a|[.small]
 Single write to the target region server
@@ -26,7 +36,7 @@ Write to one primary shard(partition) first and then sync changed documents to r
 
 
 
-| Replication Type
+s| Replication Type
 a|[.small]
 Single leader, all data replication
 a|[.small]
@@ -45,7 +55,7 @@ leader-based (primary shard vs replica shards)
 
 
 
-| Sync/Async Replication
+s| Sync/Async Replication
 a|[.small]
 Configurable, default semi-sync
 a|[.small]
@@ -61,7 +71,7 @@ Configurable, the w in quorum ((w + r > n)
 
 
 
-| FailureOver
+s| Failure Over
 a|[.small]
 
 * Follower: Follower copies latest snapshot from leader and then catch up with binlog
@@ -93,7 +103,7 @@ The replica set can continue to serve read queries if such queries are configure
 
 
 
-| Multi-leader Replication Topology
+s| Multi-leader Replication Topology
 a|[.small]
 Circular by default (Cluster version)
 | NA
@@ -110,7 +120,7 @@ NA, Leader(node with that primary shard) forwards changed documents to nodes wit
 
 
 
-| Replication Logs
+s| Replication Logs
 a|[.small]
 Originally STATEMENT-BASED, default to LOGICAL(row-based) if any nondeterminism in statement
 | WAL
@@ -125,7 +135,7 @@ Op Log, should be STATEMENT-BASED with transforms
 
 
 
-| Multi-Write Conflict Resolve
+s| Multi-Write Conflict Resolve
 a|[.small]
 NA (as all writes are sent to leader)
 a|[.small]
@@ -144,8 +154,8 @@ NA (as write are shard(partition) based, no conflict)
 
 
 
-.4+| Partition
-| Partitioning Strategy
+.4+s| Partition
+s| Partitioning Strategy
 | NA
 | Key Range
 a|[.small]
@@ -159,7 +169,7 @@ Key range before 2.4, hash and range key both support later on
 
 
 
-| Secondary Indexes
+s| Secondary Indexes
 | NA
 | No secondary index by default
 | Local
@@ -172,7 +182,7 @@ Key range before 2.4, hash and range key both support later on
 
 
 
-| Rebalancing Strategy
+s| Rebalancing Strategy
 | NA
 | Dynamic Partitioning
 a|[.small]
@@ -193,7 +203,7 @@ Fixed number of partitions per index, entire partitions moved between nodes
 
 
 
-| Request Routing
+s| Request Routing
 | NA
 a|[.small]
 Routing Tier(ZK), if no cache on client, meta table looking-up in zk first and then the region server is required
