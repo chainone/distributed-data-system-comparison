@@ -31,7 +31,9 @@ reads from secondaries may return data that does not reflect the state of the da
 a|[.small]
 Write to one primary shard(partition) first and then sync changed documents to replica shards asynchronously (? some docs saying otherwise)
 
-| Y
+a|[.small]
+The producer(client) uses the parameter "ack" to control how many partition replicas must receive the record before the producer can consider the write successful.
+
 | ?
 
 
@@ -41,18 +43,20 @@ a|[.small]
 Single leader, all data replication
 a|[.small]
 Partition based on key range, write to single region server, replica via HDFS
-
 a|[.small]
 Leaderless, partition, multi-writes to selected nodes and with read repair if stable value is obtained
-
 | Leaderless
 a|[.small]
 leader-based in one replica set, all data on primary need to be synced to secondaries
 a|[.small]
 leader-based (primary shard vs replica shards)
-| leader-based
-| leader-based
+a|[.small]
+leader-based (leader replica vs follower replica)
 
+CAUTION: Replicas don't serve any requests, it is merely for backup
+
+a|[.small]
+leader-based
 
 
 s| Sync/Async Replication
@@ -65,7 +69,9 @@ Configurable, the w in quorum ((w + r > n)
 | ?
 | Async
 | Async(? some docs say otherwise)
-| Y
+a|[.small]
+Sync, produced messages are considered “committed” when they were written to the partition on all its in-sync replicas .
+However, producer(client) can control how many partition replicas must receive the record before the producer can consider the write successful.
 | Y
 
 
@@ -84,19 +90,19 @@ a|[.small]
 
 a|[.small]
 NO IMPACT as long as quorum ((w + r > n)) is satisfied
-
 a|[.small]
 Should be same as Cassandra
 a|[.small]
 * Primary: eligible secondary calls for an election to nominate itself as the new primary. The replica set cannot process write operations until the election completes successfully.
 The replica set can continue to serve read queries if such queries are configured to run on secondaries while the primary is offline.
 * Secondary: first copy all data from one of the members, and then apply all changes by syncing oplog
-
-|
+a|[.small]
 * Master: HA masters, if no master, elect one other node as master.
 * Data nodes: if the failure node contains primary shards, one of the replica shards will be promoted (by master) to be primary, otherwise writing to that shard is not allowed
+a|[.small]
+* Controller: When the controller broker is stopped or loses connectivity to Zookeeper, the ephemeral node will disappear. Other brokers in the cluster will be notified through the Zookeeper watch that the controller is gone and will attempt to create the controller node in Zookeeper themselves. The first node to create the new controller in Zoo‐ keeper is the new controller.
+* Other brokers: for those leader replicas on this node, one of the corresponding in-sync replicas will be elected to be the leader replica. If there is no in-sync replica available, we can use "unclean.leader.election.enable" to control if we allow out-of-sync replica to be the new leader,In summary, if we allow out-of-sync replicas to become leaders, we risk data loss and data inconsistencies. If we don’t allow them to become leaders, we face lower availability.
 
-| Y
 | ?
 
 
@@ -115,7 +121,7 @@ NA, Secondary (Follower) chooses to sync oplog from Primary or Secondary based o
 a|[.small]
 NA, Leader(node with that primary shard) forwards changed documents to nodes with replicas
 
-| Y
+| NA
 | Y
 
 
@@ -129,10 +135,11 @@ Commit Log, just like the WAL in HBase, however, the write doesn't wait for fini
 | Y
 a|[.small]
 Op Log, should be STATEMENT-BASED with transforms
-| No Log, copy shards initially, and then forward changed documents to sync between primary shard and replicas
+a|[.small]
+No Log, copy shards initially, and then forward changed documents to sync between primary shard and replicas
+a|[.small]
+The topic is actually a partition-ed log, brokers having follower replicas receive messages from other brokers having corresponding leader replicas using log offset just like how the client consumes messages.
 | Y
-| Y
-
 
 
 s| Multi-Write Conflict Resolve
@@ -147,11 +154,9 @@ a|[.small]
 NA (as write are shard(partition) based, no conflict)
 a|[.small]
 NA (as write are shard(partition) based, no conflict)
-
+a|[.small]
+NA (as write are shard(partition) based, no conflict)
 | Y
-| Y
-
-
 
 
 .4+s| Partition
@@ -164,9 +169,9 @@ First Key Hash, left Key Range
 a|[.small]
 Key range before 2.4, hash and range key both support later on
 | Key Hash
-| Y
+a|[.small]
+Decided on the producer side in the topic bias, producer can choose to do hash-based partitioning(which is default) or implement its own partiton strategy. Once it is chosen, it can not be changed (which means the partition number is fixed no matter how many nodes you add later on).
 | ?
-
 
 
 s| Secondary Indexes
@@ -176,7 +181,7 @@ s| Secondary Indexes
 | Global(term-partitioned)
 | Local
 | Local
-| ?
+| NA
 | ?
 
 
@@ -191,11 +196,11 @@ Partitioning proportionally to nodes, move split partitions between
 a|[.small]
 Number of partitions equals to that of replica sets, one partition has a lot of 64MB-size chunks,
 partitions could be added later one and the number of chunks will be re-balanced across partitions (shards)
-
 a|[.small]
 Fixed number of partitions per index, entire partitions moved between nodes
-
-| Kafka
+a|[.small]
+Manual, need to use tool "kafka-reassign-partitions.sh" to do the partition rebalance. On the new broker, new replicas are created first and then old replicas are removed.
+Removing many partitions from a single broker, such as if that broker is being removed from the cluster, it is a best practice to shut down and restart the broker before starting the reassignment. This will move leadership for the partitions on that particular broker to other brokers in the cluster. This can significantly increase the per‐ formance of reassignments and reduce the impact on the cluster as the replication traffic will be distributed to many brokers.
 | RabbitMQ
 
 
@@ -214,9 +219,10 @@ Client request to any node and then forward if miss
 a|[.small]
 Routing Tier (multiple mongos to route and aggregate, and one config server to store data location information(on which partition))
 a|[.small]
-Routing Tier (client node)
+Routing Tier (node with client role)
 a|[.small]
-? Routing Tier(or partition aware client?)(ZK)
+Partition aware client
+Producer knows which broker to sent partitioned message to, and consumer knows which partitions he is responsible for receiving the messages from
 | RabbitMQ
 |===
 
