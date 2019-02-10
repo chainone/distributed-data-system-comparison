@@ -247,7 +247,7 @@ Producer knows which broker to sent partitioned message to, and consumer knows w
 ## TODO
 . Add more data systems: zookeeper, etcd, consule
 . Clarification on CAP
-. Add "Read behavior" in the table
+. Add "Read behavior","Dependencies", "Consensus Algorithm", "Distributed Transaction" in the table
 
 ## Reference
 
