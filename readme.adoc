@@ -1,5 +1,5 @@
 ## Preface
-While I was reading the book "Designing Data-Intensive Applications", I was trying to understand the essence of distributed data systems and what are the techniques commonly applied in those data systems that we (as developers) interact with everyday and what are the pros and cons.
+While reading the book "Designing Data-Intensive Applications", I was trying to understand the essence of distributed data systems and what are the techniques commonly applied in those data systems that we (as developers) interact with everyday and what are the pros and cons.
 
 Though the book mentioned some of those data systems throughout the book, there is no central place to categorize all the popular existing distributed data systems by different characteristics.
 That's why I have the idea to make a such table so that it could help me to memorize and also it may be valuable to all the developers that are interested in this area.
