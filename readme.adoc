@@ -243,6 +243,12 @@ Producer knows which broker to sent partitioned message to, and consumer knows w
 
 |===
 
+
+## TODO
+. Add more data systems: zookeeper, etcd, consule
+. Clarification on CAP
+. Add "Read behavior" in the table
+
 ## Reference
 
 . Designing Data-Intensive Applications (link:https://dataintensive.net/[])
