@@ -6,6 +6,13 @@ That's why I have the idea to make a such table so that it could help me to memo
 
 CAUTION: The comparison table is not finished yet nor 100% correct, contributions are welcomed!
 
+## Table Snapshots
+NOTE: As 1) The table is too wide to be shown properly; 2) Github doesn't handle adoc very well, table snapshots are placed here for ease of viewing
+
+image::snapshot1.png[]
+image::snapshot2.png[]
+
+
 ## Detailed comparison table
 
 [cols="10*", options="header"]
