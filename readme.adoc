@@ -9,8 +9,8 @@ CAUTION: The comparison table is not finished yet nor 100% correct, contribution
 ## Table Snapshots
 NOTE: As 1) The table is too wide to be shown properly; 2) Github doesn't handle adoc very well, table snapshots are placed here for ease of viewing
 
-image::snapshot1.png[]
-image::snapshot2.png[]
+image::Snapshot1.png[]
+image::Snapshot2.png[]
 
 
 ## Detailed comparison table
