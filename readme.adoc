@@ -234,26 +234,26 @@ Producer knows which broker to sent partitioned message to, and consumer knows w
 |===
 
 ## CAP
+NOTE: CAP theorem is actually widely misunderstood, please refer to links: https://martin.kleppmann.com/2015/05/11/please-stop-calling-databases-cp-or-ap.html["Please stop calling databases CP or AP"] & link:https://pasztor.at/blog/cap-theorem["What is the CAP theorem?"] for clarification. However, it is still useful or relevant to most people for understanding the characteristics of those data systems
 
 [cols="8*", options="header"]
 |===
 | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
 
-| P, Not C nor A
+| Master-Slave: AP, Cluster: CP (I question that Ma-Sla is only P, as when master goes down, during master election, data is not available for read)
 | CP
 | AP, Eventually C
 | AP, Eventually C
 | P, Not A (during failure-over election), Not C (as async replica sync)
 | P, Not A (during the promotion of primary shards), Not C (as async replica sync)
-| Kafka
+| CA (Author stats CA, however I think it is a CP system, system can tolerant node failure, however during the failure, primary partition has to be elected, in that period, data in that partition is not available to read )
 | RabbitMQ
 
 |===
 
 
 ## TODO
-. Add more data systems: zookeeper, etcd, consule
-. Clarification on CAP
+. Add more data systems: tidb, zookeeper, etcd, consule
 . Add "Read behavior","Dependencies", "Consensus Algorithm", "Distributed Transaction" in the table
 
 ## Reference
