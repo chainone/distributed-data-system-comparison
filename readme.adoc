@@ -240,13 +240,17 @@ NOTE: CAP theorem is actually widely misunderstood, please refer to links: https
 |===
 | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
 
-a|[.small] Master-Slave: AP, Cluster: CP (I question that Ma-Sla is only P, as when master goes down, during master election, data is not available for read)
+a|[.small]
+Master-Slave: AP, Cluster: CP (I question that Ma-Sla is only P, as when master goes down, during master election, data is not available for read)
 | CP
 | AP, Eventually C
 | AP, Eventually C
-a|[.small] P, Not A (during failure-over election), Not C (as async replica sync)
-a|[.small] P, Not A (during the promotion of primary shards), Not C (as async replica sync)
-a|[.small] CA (Author stats CA, however I think it is a CP system, system can tolerant node failure, however during the failure, primary partition has to be elected, in that period, data in that partition is not available to read )
+a|[.small]
+P, Not A (during failure-over election), Not C (as async replica sync)
+a|[.small]
+P, Not A (during the promotion of primary shards), Not C (as async replica sync)
+a|[.small]
+CA (Author stats CA, however I think it is a CP system, system can tolerant node failure, however during the failure, primary partition has to be elected, in that period, data in that partition is not available to read )
 | RabbitMQ
 
 |===
