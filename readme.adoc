@@ -241,7 +241,7 @@ NOTE: CAP theorem is actually widely misunderstood, please refer to links: https
 | MySQL | HBase | Cassandra | DynamoDB | MongoDB | ElasticSearch  | Kafka | RabbitMQ
 
 a|[.small]
-Master-Slave: AP, Cluster: CP (I question that Ma-Sla is only P, as when master goes down, during master election, data is not available for read)
+Master-Slave: AP, Cluster: CP (I question that Ma-Sla is only P, as when master goes down, during master election, data is not available for read and write)
 | CP
 | AP, Eventually C
 | AP, Eventually C
